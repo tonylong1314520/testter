@@ -10,7 +10,7 @@ steam_data = pd.read_csv('steam.csv')
 steam_data2 = pd.read_csv('steam2.csv')
 steam_data3 = pd.read_csv('steam3.csv')
 app = Dash(__name__)
-
+server = app.server
 count_dif_game = steam_data.groupby('Name of the games')['Name of the games'].agg('count')
 
 # Average hours users spend on steam

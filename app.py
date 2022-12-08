@@ -147,7 +147,7 @@ app.layout = html.Div([
                 ], style={'align-items': 'center'})
                 ])
     ])
-], style={'backgroundColor': '#121212', 'color': '#84c9fb', 'height': '100vh', 'width': '98vw',
+], style={'backgroundColor': '#121212', 'color': '#84c9fb', 'height': '1100px 'width': '98vw',
           'font-family': 'Courier New'})
 
 

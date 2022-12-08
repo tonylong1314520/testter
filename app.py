@@ -210,7 +210,7 @@ app.layout = html.Div([
         dcc.Tab(label='Game Recommendation Engine',
                 style={'backgroundColor': '#272727', 'color': '#84c9fb', 'font-family': 'Courier New'},
                 children=[html.Div([
-                    html.H1("Recommendation Generator"),
+                    html.H1("Recommendation Engine"),
                     html.P("Given a user_id, this engine will check all game titles played by users in the 200k sized"
                            " database and recommends a game to the user. Note that the more games the user played, the"
                            " more accurate the results will be."),
@@ -218,15 +218,15 @@ app.layout = html.Div([
                         dcc.Textarea(
                             id='textarea-state-example',
                             placeholder="Enter a user ID",
-                            style={'width': '100%', 'height': 100, 'color': '#84c9fb', 'font-family': 'Courier New',
+                            style={'width': '98%', 'height': 100, 'color': '#84c9fb', 'font-family': 'Courier New',
                                    'background': '#272727'},
                         ),
                         html.Button('Submit', id='textarea-state-example-button', n_clicks=0),
                         html.Div(id='textarea-state-example-output',
-                                 style={'whiteSpace': 'pre-line', 'color': '#84c9fb', 'width': '100%', 'height': 300,
-                                        'background': '#272727', 'margin-top': '20px'})
+                                 style={'whiteSpace': 'pre-line', 'color': '#84c9fb', 'width': '100%', 'height': 600,
+                                        'maxHeight': '600px', 'background': '#272727', 'margin-top': '20px',
+                                        'overflowY': 'scroll'})
                     ]),
-                    html.Div(id='output_div-get')
                 ], style={'align-items': 'center', 'height': '100vh'})
                 ])
     ])
@@ -244,8 +244,6 @@ def update_output(n_clicks, value):
         longString = ""
         try:
             value = int(value)
-        except:
-            return 'Invalid input! \n{}'.format(value)
         finally:
             res = corr_users(value)
             if len(res) < 1:
@@ -290,17 +288,16 @@ def corr_users(random_id):
         else:
             pass
 
-    print("You were matched up with this number of gamers:", len(best))
+    # print("You were matched up with this number of gamers:", len(best))
 
     if len(best) == 0:
         print("Warning: No matches")
 
     else:  # If there are matches:
         res = []
-        print("Coincidence levels are: ")  # print every correlation levels we found
+        # print("Coincidence levels are: ")  # print every correlation levels we found
         res.append("Coincidence levels are:")
         for i in best:
-            print(str(i[0]))
             res.append(str(i[0]))
 
         best_positive = sorted(best, key=lambda x: x[0], reverse=True)[0]  # The most  correlated tuple
@@ -308,10 +305,7 @@ def corr_users(random_id):
         second_recom = max(second_positive[1])
         first_recom = max(best_positive[1])
         recoms = (first_recom, second_recom)
-        print("We recommend : ")
         res.append("We recommend: ")
-        print("-" + recoms[0] + "  Coincidence: " + str(best_positive[0] * 100)[:5] + "%")
-        print("-" + recoms[1] + "  Coincidence: " + str(abs(second_positive[0] * 100))[:5] + "%")
         res.append("-" + recoms[0] + "  Coincidence: " + str(best_positive[0] * 100)[:5] + "%")
         res.append("-" + recoms[1] + "  Coincidence: " + str(abs(second_positive[0] * 100))[:5] + "%")
         return res

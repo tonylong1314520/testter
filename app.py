@@ -1,3 +1,4 @@
+import dash
 from dash import dash_table
 from dash import dcc
 from dash import html
@@ -5,6 +6,12 @@ from dash import Dash
 import numpy as np
 import pandas as pd
 import plotly.express as px
+import matplotlib
+import matplotlib.pyplot as plt
+
+# Recommender for games
+df = pd.read_csv("steam-200k.csv")
+df.columns = ["user_id", "game", "activity", "hours", "unknown"]
 
 steam_data = pd.read_csv('steam.csv')
 steam_data2 = pd.read_csv('steam2.csv')
@@ -17,6 +24,21 @@ count_dif_game = steam_data.groupby('Name of the games')['Name of the games'].ag
 average = steam_data3['Average']
 
 # Tables
+original_table = dash_table.DataTable(
+    data=df.to_dict('records'),
+    columns=[{"id": i, "name": i} for i in df.columns],
+    style_cell={'textAlign': 'center', 'backgroundColor': '#141414', 'font-family': 'Courier New', 'border': '#141414',
+                'width': '25%'},
+    fixed_rows={'headers': True},
+    style_header={
+        'backgroundColor': '#000010',
+        'fontWeight': 'bold',
+        'font-family': 'Courier New'
+    },
+    style_as_list_view=True,
+    style_table={'height': '400px'}
+)
+
 raw_table = dash_table.DataTable(
     data=steam_data.to_dict('records'),
     columns=[{"id": i, "name": i} for i in steam_data.columns],
@@ -99,12 +121,16 @@ app.layout = html.Div([
                         html.Div([
                             html.H3("Game vs Time Table"),
                             game_hour_table
-                        ], style={'flex': '45%'}),
+                        ], style={'flex': '45%', 'margin-top': '30px'}),
                         html.Div([
                             html.H3("Player vs Hour"),
                             player_hours_played_table
                         ], style={'flex': '45%'})
                     ], style={'align-items': 'center', 'display': 'flex'}),
+                    html.Div([
+                        html.H3("Original Data Table", style={'padding-left': '45%'}),
+                        original_table
+                    ], style={'align-items': 'center'})
                 ])
                 ]),
         dcc.Tab(label='Visualizations',
@@ -114,22 +140,22 @@ app.layout = html.Div([
                         html.Div([
                             html.H3("Free vs Purchased"),
                             dcc.Graph(figure=purch_chart, style={'align-items': 'center'}),
-                        ], style={'margin': '15px', 'align-items': 'center', 'flex': '45%'}),
+                        ], style={'margin': '15px', 'align-items': 'center'}),
                         html.Div([
                             html.H3("Players vs Hours"),
                             dcc.Graph(figure=player_hours),
-                        ], style={'margin': '15px', 'align-items': 'center', 'flex': '45%'}),
-                    ], style={'display': 'flex'}),
+                        ], style={'margin': '15px', 'align-items': 'center'}),
+                    ]),
                     html.Div([
                         html.Div([
                             html.H3("Game Titles vs Hours"),
                             dcc.Graph(figure=titles_pie),
-                        ], style={'margin': '15px', 'align-items': 'center', 'flex': '45%'}),
+                        ], style={'margin': '15px', 'align-items': 'center'}),
                         html.Div([
                             html.H3("Game Titles vs Hours"),
                             dcc.Graph(figure=titles_multi),
-                        ], style={'margin': '15px', 'align-items': 'center', 'flex': '45%'}),
-                    ], style={'display': 'flex'}),
+                        ], style={'margin': '15px', 'align-items': 'center'}),
+                    ]),
                 ])
                 ]),
         dcc.Tab(label='Game Recommendation Engine',
@@ -144,12 +170,11 @@ app.layout = html.Div([
                         html.Button(id='submit-button-get', children='Submit', type='submit'),
                     ]),
                     html.Div(id='output_div-get')
-                ], style={'align-items': 'center'})
+                ], style={'align-items': 'center', 'height': '100vh'})
                 ])
     ])
-], style={'backgroundColor': '#121212', 'color': '#84c9fb', 'height': '1100px 'width': '98vw',
+], style={'backgroundColor': '#121212', 'color': '#84c9fb', 'width': '98vw',
           'font-family': 'Courier New'})
 
-
 if __name__ == '__main__':
-    app.run_server()
+    app.run_server(debug=True)
